@@ -2,6 +2,8 @@ Python Registry Parser
 =======================
 The idea of this started out as one to duplicate Microsoft's autoruns tool to the extent possible with only offline registry hives. Then I started adding extra non-autorun(ish) registry keys and then it turned into more of a Windows Registry parser; hence the name change from autoreg-parse to python-regparse. I'm terrible at naming scripts/tools so this will have to suffice.
 
+I write about it here on my blog: https://sysforensics.org/2015/03/python-registry-parser.html
+
 Purpose/Reason
 ===============
 - I didn't like the output of other tools.
