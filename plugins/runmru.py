@@ -19,16 +19,14 @@ class Services(IPlugin):
         self.format_file = format_file
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
         
-        runmru_entries = []        
-        
-        runmru = Registry.Registry(self.hive).open("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU")
-        runmru_list = runmru.value("MRUList").value()
-        last_write = runmru.timestamp()
-
-        s = ",".join(["{:02x}".format(ord(c)) for c in runmru_list])
-
-        for entry in s.split(','):
-            try:
+        try: 
+            runmru_entries = []
+            runmru = Registry.Registry(self.hive).open("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU")
+            runmru_list = runmru.value("MRUList").value()
+            last_write = runmru.timestamp()        
+            s = ",".join(["{:02x}".format(ord(c)) for c in runmru_list])
+            
+            for entry in s.split(','):
                 for vals in runmru.values():
                     if vals.name() == str(entry.decode("hex")):
                         key_name = vals.name()
@@ -50,5 +48,6 @@ class Services(IPlugin):
                                                          key_name=key_name, \
                                                          value=value) + "\n")                       
                 
-            except Registry.RegistryKeyNotFoundException as e:
-                pass
+        except (Registry.RegistryKeyNotFoundException, Registry.RegistryParse.RegistryStructureDoesNotExist) as e:
+            print "No RunMRU found."
+            exit(0)
