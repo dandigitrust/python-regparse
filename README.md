@@ -17,7 +17,7 @@ I suggest taking a look here for some output examples: https://sysforensics.org/
 
 How to Install
 ===============
-- Install Python 2.7
+- Install Python 2.79
 - sudo pip install python-registry
 - sudo pip install jinja2
 - wget https://github.com/sysforensics/python-regparse/blob/master/yapsy_mods/yapsy-master.zip
