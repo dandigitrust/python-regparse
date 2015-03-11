@@ -18,6 +18,7 @@ I suggest taking a look here for some output examples: https://sysforensics.org/
 How to Install
 ===============
 - Install Python 2.79
+- Install https://pypi.python.org/pypi/setuptools
 - sudo pip install python-registry
 - sudo pip install jinja2
 - wget https://github.com/sysforensics/python-regparse/blob/master/yapsy_mods/yapsy-master.zip
@@ -29,7 +30,9 @@ How to Install
 - Unzip
 - Put it where you want, and then enjoy!
 
-I've tested/used on OSX and SIFT 3.0 - Should work fine if you follow the directions. Windows should also work fine.
+
+
+I've tested/used on OSX, Windows and SIFT 3.0. If pip doesn't work for you try easy_install.
 
 Want to Help?
 ==============
