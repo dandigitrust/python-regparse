@@ -6,7 +6,7 @@ from jinja2 import Template, Environment, PackageLoader
 #import logging
 #logging.basicConfig(level=logging.DEBUG)
 
-class Services(IPlugin):
+class ActiveSetup(IPlugin):
 
     def __init__(self, hive=None, format=None, format_file=None):
         self.hive = hive
