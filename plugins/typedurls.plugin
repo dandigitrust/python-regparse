@@ -1,0 +1,10 @@
+[Core]
+Name = typedurls
+Module = typedurls
+
+[Documentation]
+Author = Patrick Olsen
+Version = 0.2
+Website = http://sysforensics.org
+Fields = "{{ last_write }}|{{ url_name }}|{{ url }}"
+Description = Parses the NTUSER hives and returns Typed URL entries.
