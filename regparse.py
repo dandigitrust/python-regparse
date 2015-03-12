@@ -56,9 +56,7 @@ def main():
     if args.listplugins:
         ListPlugins().AllPlugins()
 
-    else: 
-        #for hive in args.hives:
-            #ProcessHive(args.plugin).getHive(hive, args.format, args.format_file)
+    else:
         ProcessHive(args.plugin).getHive(args.hives, args.format, args.format_file)
 
 if __name__ == "__main__":
