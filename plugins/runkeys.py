@@ -17,7 +17,37 @@ class RunKeys(IPlugin):
         self.hive = hive
         self.format = format
         self.format_file = format_file
-
+        env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
+        
+        dict = {}
+        
+        for hive in self.hive:
+            dict.update(self.processKeys(hive))
+            
+        for key, val in dict.iteritems():
+            last_write = val[0]
+            sub_key = key
+            key_name = val[1]
+            value = val[2]
+            
+            
+            if self.format is not None:              
+                template = Environment().from_string(format[0])
+                sys.stdout.write(template.render(last_write=last_write, \
+                                                     key_name=key_name, \
+                                                     sub_key=sub_key, \
+                                                     value=value) + "\n")
+            elif self.format_file is not None:
+                with open(self.format_file[0], "rb") as f:
+                    template = env.from_string(f.read())
+                    sys.stdout.write(template.render(last_write=last_write, \
+                                                     key_name=key_name, \
+                                                     sub_key=sub_key, \
+                                                     value=value) + "\n")        
+    
+    def processKeys(self, hive=None):
+        self.hive = hive
+        run_key_list = []
         run_entries =   ["Microsoft\\Windows\\CurrentVersion\\Run",
                          "Microsoft\\Windows\\CurrentVersion\\RunOnce",
                          "Microsoft\\Windows\\CurrentVersion\\RunOnceEx",
@@ -28,26 +58,12 @@ class RunKeys(IPlugin):
                          "Software\\Microsoft\\Windows\\CurrentVersion\\Run",
                          "Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
                          "Software\\Microsoft\\Windows\\CurrentVersion\\RunServices",
-                         "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run"]        
-
-        self.processKeys(self.hive, self.format, self.format_file, run_entries)
-    
-    def processKeys(self, hive=None, format=None, format_file=None, run_entries=None):
-        self.format = format
-        self.format_file = format_file
-        self.run_entries = run_entries
-    
-        env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
-    
-        key_hive = self.hive
-        runkey_list = []
-    
+                         "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\Run"]
+        
         for k in run_entries:
             try:
-                key = Registry.Registry(hive).open(k)
-    
-                for v in key.values():
-                    last_write = key.timestamp()
+                for v in  Registry.Registry(self.hive).open(k).values():
+                    last_write = Registry.Registry(self.hive).open(k).timestamp()
                     if k:
                         key_name = k
                     else:
@@ -55,33 +71,18 @@ class RunKeys(IPlugin):
                     if v.name():
                         name = v.name()
                     else:
-                        name = v.name()
+                        name = "None"
                     if v.value():
                         value = v.value()
                     else:
-                        value = v.value()
-    
-                    runkey_list.append([last_write, key_name, name, value])
-    
-            except Registry.RegistryKeyNotFoundException as e:
-                pass
-    
-        if self.format is not None:
-            for entry in runkey_list:
-                last_write = entry[0]
-                key_name = entry[1]
-                name = entry[2]
-                value = entry[3]
-                template = Environment().from_string(format[0])
-                sys.stdout.write(template.render(k=k, \
-                                                 key_hive=key_hive, \
-                                                 last_write=last_write, \
-                                                 key_name=key_name, \
-                                                 name=name, \
-                                                 value=value) + "\n")
-        elif self.format_file is not None:
-            with open(self.format_file[0], "rb") as f:
-                template = env.from_string(f.read())            
-                sys.stdout.write(template.render(k=k, \
-                                                 key_hive=key_hive, \
-                                                 runkey_list=runkey_list) + "\n")
+                        value = "None"
+                    run_key_list.append([last_write, key_name, name, value])
+                    
+            except Registry.RegistryKeyNotFoundException:
+                continue
+        
+        dict = {}
+        for entry in run_key_list:
+            dict[entry[2]] = entry[0], entry[1], entry[3]            
+
+        return(dict)

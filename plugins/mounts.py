@@ -14,11 +14,36 @@ class Mounts(IPlugin):
         self.hive = hive
         self.format = format
         self.format_file = format_file
+        dict = {}
+        env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
+        
+        for hive in self.hive:
+            dict.update(self.processKeys(hive))
+            
+            
+        for key, val in dict.iteritems():
+            last_write = val[0]
+            name = key
+            value = val[1]
+            
+            if self.format_file is not None:                
+                with open(self.format_file[0], "rb") as f:
+                    template = env.from_string(f.read())
+                    sys.stdout.write(template.render(last_write=last_write, \
+                                                     name=name, \
+                                                     value=value) + "\n")
+            elif self.format is not None:           
+                template = Environment().from_string(format[0])
+                sys.stdout.write(template.render(last_write=last_write, \
+                                                 name=name, \
+                                                 value=value) + "\n")
+    
+    def processKeys(self, hive):
         
         mounteddevices_list = []
         
         try:
-            mountpoints = Registry.Registry(self.hive).open("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MountPoints2")
+            mountpoints = Registry.Registry(hive).open("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MountPoints2")
             for mps in mountpoints.subkeys():
                 last_write = mps.timestamp()
                 name = mps.name()
@@ -30,7 +55,7 @@ class Mounts(IPlugin):
             pass
         
         try:
-            networkmru = Registry.Registry(self.hive).open("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Map Network Drive MRU")
+            networkmru = Registry.Registry(hive).open("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Map Network Drive MRU")
             for mrus in networkmru.values():
                 last_write = networkmru.timestamp()
                 name = mrus.name()
@@ -41,7 +66,7 @@ class Mounts(IPlugin):
             pass
         
         try:
-            mounteddevices = Registry.Registry(self.hive).open("MountedDevices")
+            mounteddevices = Registry.Registry(hive).open("MountedDevices")
             for mount in mounteddevices.values():
                 last_write = mounteddevices.timestamp()
                 name = mount.name()
@@ -51,28 +76,10 @@ class Mounts(IPlugin):
         except Registry.RegistryKeyNotFoundException as e:
             pass
 
-        self.processMounted(mounteddevices_list, self.format, self.format_file)
         
-        
-    def processMounted(self, mounteddevices_list=None, format=None, format_file=None):
-        self.format = format
-        self.format_file = format_file
-        self.mounteddevices_list = mounteddevices_list
-        env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
-        
-        if self.format_file is not None:
-            for entry in self.mounteddevices_list:
-                last_write = entry[0]
-                name = entry[1]
-                value = entry[2]                
-                with open(self.format_file[0], "rb") as f:
-                    template = env.from_string(f.read())
-                    sys.stdout.write(template.render(last_write=last_write, name=name, value=value) + "\n")
-
-        elif self.format is not None:
-            for entry in self.mounteddevices_list:
-                last_write = entry[0]
-                name = entry[1]
-                value = entry[2]               
-                template = Environment().from_string(format[0])
-                sys.stdout.write(template.render(last_write=last_write, name=name, value=value) + "\n")          
+        dict = {}
+        for entry in mounteddevices_list:
+            dict[entry[1]] = entry[0], entry[2]
+    
+        return(dict)        
+                  

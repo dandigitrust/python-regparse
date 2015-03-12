@@ -16,26 +16,35 @@ class KnownDLLs(IPlugin):
         self.format_file = format_file
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
         
-        try:
-            current = HelperFunction(self.hive).CurrentControlSet()
-            knowndlls = Registry.Registry(self.hive).open('%s\\Control\\Session Manager\\KnownDLLs' % (current))
-            last_write = knowndlls.timestamp()
-            try:
-                for v in knowndlls.values():
-                    name = v.name()
-                    value = v.value()
-                    
-                    if self.format_file is not None:
-                        with open(self.format_file[0], "rb") as f:
-                            template = env.from_string(f.read())
-                            sys.stdout.write(template.render(last_write=last_write, name=name, value=value) + "\n")
+        for hive in self.hive:
+            for entry in self.processKeys(hive):
+                last_write = entry[0]
+                name = entry[1]
+                value = entry[2]
                 
-                    elif self.format is not None:              
-                        template = Environment().from_string(format[0])
+                if self.format_file is not None:
+                    with open(self.format_file[0], "rb") as f:
+                        template = env.from_string(f.read())
                         sys.stdout.write(template.render(last_write=last_write, name=name, value=value) + "\n")
-                    
-            except Registry.RegistryKeyNotFoundException as e:
-                pass
+
+                elif self.format is not None:              
+                    template = Environment().from_string(format[0])
+                    sys.stdout.write(template.render(last_write=last_write, name=name, value=value) + "\n")
+            
+    def processKeys(self, hive):
+        
+        knowndlls_list = []
+        
+        try:
+            current = HelperFunction(hive).CurrentControlSet()
+            last_write = Registry.Registry(hive).open('%s\\Control\\Session Manager\\KnownDLLs' % (current)).timestamp()
+            
+            for v in Registry.Registry(hive).open('%s\\Control\\Session Manager\\KnownDLLs' % (current)).values():
+                name = v.name()
+                value = v.value()
+                knowndlls_list.append([last_write, name, value])
             
         except Registry.RegistryKeyNotFoundException as e:
             pass
+        
+        return(knowndlls_list)

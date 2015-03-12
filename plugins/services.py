@@ -18,9 +18,42 @@ class Services(IPlugin):
         self.format = format
         self.format_file = format_file
         
-        if "system" in self.hive.lower():
-            current = HelperFunction(self.hive).CurrentControlSet()
-            services = Registry.Registry(self.hive).open('%s\\Services' % (current))
+        env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
+        
+        dict = {}
+        
+        for hive in self.hive:
+            dict.update(self.processServices(hive))
+         
+        for key, val in dict.iteritems():
+            last_write = val[0]
+            key_name = key
+            image_path = val[1]
+            type_name = val[2]
+            display_name = val[3]
+            start_type = val[4]
+            service_dll = val[5]
+            
+
+            if self.format_file is not None:
+                with open(self.format_file[0], "rb") as f:
+                    template = env.from_string(f.read())
+                    sys.stdout.write(template.render(last_write=last_write, key_name=key_name, \
+                                                     image_path=image_path, type_name=type_name, \
+                                                     display_name=display_name, start_type=start_type, \
+                                                     service_dll=service_dll) + "\n")
+                    
+            elif self.format is not None:
+                template = Environment().from_string(format[0])
+                sys.stdout.write(template.render(last_write=last_write, key_name=key_name, \
+                                                 image_path=image_path, type_name=type_name, \
+                                                 display_name=display_name, start_type=start_type, \
+                                                 service_dll=service_dll) + "\n")
+    
+    def processServices(self, hive):
+        
+            current = HelperFunction(hive).CurrentControlSet()
+            services = Registry.Registry(hive).open('%s\\Services' % (current))
             
             service_list = []
             objects_list = []     
@@ -29,9 +62,10 @@ class Services(IPlugin):
                 service_list.append(service.name().lower())
     
             for service_name in service_list:
-                k = Registry.Registry(self.hive).open('ControlSet001\\Services\\' + service_name)
-                key_name = k.name()
+                k = Registry.Registry(hive).open('ControlSet001\\Services\\' + service_name)
+                key_name = k.name()                
                 last_write = str(k.timestamp())
+                
                 try:
                     type_name = k.value("Type").value()
                 except:
@@ -53,20 +87,10 @@ class Services(IPlugin):
                 except:
                     service_dll = "None"
                 
-                env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
+                objects_list.append([last_write, key_name, image_path, type_name, display_name, start_type, service_dll])
                 
+            dict = {}
+            for entry in objects_list:
+                dict[entry[1]] = entry[0], entry[2], entry[3], entry[4], entry[5], entry[6]
                 
-                if self.format_file is not None:
-                    with open(self.format_file[0], "rb") as f:
-                        template = env.from_string(f.read())
-                        sys.stdout.write(template.render(last_write=last_write, key_name=key_name, \
-                                                         image_path=image_path, type_name=type_name, \
-                                                         display_name=display_name, start_type=start_type, \
-                                                         service_dll=service_dll) + "\n")
-                    
-                elif self.format is not None:
-                    template = Environment().from_string(format[0])
-                    sys.stdout.write(template.render(last_write=last_write, key_name=key_name, \
-                                                     image_path=image_path, type_name=type_name, \
-                                                     display_name=display_name, start_type=start_type, \
-                                                     service_dll=service_dll) + "\n")                    
+            return(dict)
