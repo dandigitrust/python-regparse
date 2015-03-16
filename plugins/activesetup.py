@@ -8,12 +8,12 @@ from jinja2 import Template, Environment, PackageLoader
 
 class ActiveSetup(IPlugin):
 
-    def __init__(self, hive=None, format=None, format_file=None):
+    def __init__(self, hive=None, format=None, format_file=None, search=None):
         self.hive = hive
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None):
+    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
         self.hive = hive
         self.format = format
         self.format_file = format_file
@@ -48,7 +48,7 @@ class ActiveSetup(IPlugin):
         active_setup_list_entries = []
         active_setup = ["Microsoft\\Active Setup\\Installed Components",
                         "Wow6432Node\\Microsoft\\Active Setup\\Installed Components"]
-        
+
         try:
             for m in active_setup:
                 for v in Registry.Registry(hive).open(m).subkeys():

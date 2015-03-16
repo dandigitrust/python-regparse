@@ -4,7 +4,7 @@ Module = runkeys
 
 [Documentation]
 Author = Patrick Olsen
-Version = 0.2
+Version = 0.4
 Website = http://sysforensics.org
-Fields = "{{ last_write }}|{{ k }}|{{ key_hive }}|{{ key_name }}|{{ value }}"
+Fields = "{{ last_write }}|{{ key_name }}|{{ sub_key }}|{{ value }}"
 Description = Parses the SOFTWARE and NTUSER hives and returns common auto run entries.

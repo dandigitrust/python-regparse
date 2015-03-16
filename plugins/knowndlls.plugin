@@ -4,7 +4,7 @@ Module = knowndlls
 
 [Documentation]
 Author = Patrick Olsen
-Version = 0.2
+Version = 0.3
 Website = http://sysforensics.org
 Fields = "{{ last_write }}|{{ name }}|{{ value }}"
 Description = Parses the SYSTEM hive and returns Known DLLs.

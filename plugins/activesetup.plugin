@@ -4,7 +4,7 @@ Module = activesetup
 
 [Documentation]
 Author = Patrick Olsen
-Version = 0.2
+Version = 0.3
 Website = http://sysforensics.org
 Fields = "{{ last_write }}|{{ key_name }}|{{ stub_path }}"
 Description = Parses the SOFTWARE hives and returns Active Setup entries.

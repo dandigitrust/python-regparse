@@ -9,12 +9,12 @@ import time
 
 class SystemInformation(IPlugin):
 
-    def __init__(self, hive=None, format=None, format_file=None):
+    def __init__(self, hive=None, format=None, format_file=None, search=None):
         self.hive = hive
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None):
+    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
         self.hive = hive
         self.format = format
         self.format_file = format_file

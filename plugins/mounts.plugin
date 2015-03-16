@@ -4,7 +4,7 @@ Module = mounts
 
 [Documentation]
 Author = Patrick Olsen
-Version = 0.2
+Version = 0.3
 Website = http://sysforensics.org
 Fields = "{{ last_write }}|{{ name }}|{{ value }}"
 Description = Parses the SYSTEM and NTUSER hives and returns mount points.

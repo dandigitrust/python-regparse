@@ -4,7 +4,7 @@ Module = sysinfo
 
 [Documentation]
 Author = Patrick Olsen
-Version = 0.2
+Version = 0.3
 Website = http://sysforensics.org
 Fields = "{{ last_write }}|{{ os_info }}|{{ installed_date }}|{{ registered_owner }}"
 Description = Parses the SOFTWARE hive and returns system information.
