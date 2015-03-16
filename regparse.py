@@ -46,9 +46,7 @@ def main():
                         help='Registry Hives.')
     parser.add_argument('--search', required=False, 
                         nargs='*',
-                        help='Provide a search value and search the hive(s).') 
-    #parser.add_argument('--search', required=False,
-    #                    help='Provide a search value and search the hive(s).')     
+                        help='Provide a search value and search the hive(s).')     
     parser.add_argument('--format', action="store", metavar="format",
                         nargs=1, dest="format",
                         help="Custom output.")
