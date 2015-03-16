@@ -36,9 +36,10 @@ class ProcessHive(object):
         self.format = format
         self.format_file = format_file
 
-    def getHive(self, hive=None, format=None, format_file=None):
+    def getHive(self, hive=None, format=None, format_file=None, search=None):
         self.hive = hive
         self.format = format
         self.format_file = format_file
+        self.search = search
         
-        return(ListPlugins(self.plugin_name, self.hive).ActivatePlugin().ProcessPlugin(self.hive, self.format, self.format_file))
+        return(ListPlugins(self.plugin_name, self.hive).ActivatePlugin().ProcessPlugin(self.hive, self.format, self.format_file, self.search))

@@ -44,20 +44,24 @@ def main():
     parser.add_argument('--hives', required=False, 
                         nargs='*', 
                         help='Registry Hives.')
-    #Reference: http://www.williballenthin.com/forensics/mft/list_mft/ 
+    parser.add_argument('--search', required=False, 
+                        nargs='*',
+                        help='Provide a search value and search the hive(s).') 
+    #parser.add_argument('--search', required=False,
+    #                    help='Provide a search value and search the hive(s).')     
     parser.add_argument('--format', action="store", metavar="format",
                         nargs=1, dest="format",
                         help="Custom output.")
     parser.add_argument('--format_file', action="store", metavar="format_file",
                         nargs=1, dest="format_file",
-                        help="Custom output template.")    
+                        help="Custom output template.")
     args = parser.parse_args()
 
     if args.listplugins:
         ListPlugins().AllPlugins()
 
     else:
-        ProcessHive(args.plugin).getHive(args.hives, args.format, args.format_file)
+        ProcessHive(args.plugin).getHive(args.hives, args.format, args.format_file, args.search)
 
 if __name__ == "__main__":
     main()
