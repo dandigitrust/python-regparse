@@ -36,7 +36,10 @@ I've tested/used on OSX, Windows and SIFT 3.0. If pip doesn't work for you try e
 
 Want to Help?
 ==============
-If you are interested in helping please reach out. Also, feel free to contibute some plugins. If you can't code, but have some ideas please let me know as well. That's almost more important. Just create an issue here on GitHub or if you don't have a GitHub account you can shoot me an email.
+- If something is broke let me know.
+- If you want a plugin let me know.
+- Share hives. I only have so many to test against.
+- Feel free to write some plugins.
 
 Thanks to:
 ==============
