@@ -1,0 +1,10 @@
+[Core]
+Name = runmru
+Module = runmru
+
+[Documentation]
+Author = Patrick Olsen
+Version = 0.1
+Website = http://sysforensics.org
+Fields = "{{ last_write }}|{{ key }}|{{ mruorder }}|{{ value }}|{{ data }}"
+Description = Parses the NTUSER hive and returns RunMRU entries.
