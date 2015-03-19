@@ -48,26 +48,31 @@ class ActiveSetup(IPlugin):
         active_setup_list_entries = []
         active_setup = ["Microsoft\\Active Setup\\Installed Components",
                         "Wow6432Node\\Microsoft\\Active Setup\\Installed Components"]
-
-        try:
-            for m in active_setup:
+        
+        for m in active_setup:
+            try:
                 for v in Registry.Registry(hive).open(m).subkeys():
                     active_setup_list.append(v.name())
+                    
+            except Registry.RegistryKeyNotFoundException:
+                continue
         
             for keys in active_setup_list:
-                k = Registry.Registry(hive).open(m + "\\%s" % (keys))
-                for activesets in k.values():
-                    if activesets.name() == "StubPath":
-                        if activesets.value() is not '':
-                            last_write = k.timestamp()
-                            key_name = k.name().encode('ascii', 'ignore')
-                            stub_path = activesets.value().encode('ascii', 'ignore')
-
-                            active_setup_list_entries.append([last_write, key_name, stub_path])
-                            
-        except Registry.RegistryKeyNotFoundException as e:
-            pass
+                try:
+                    k = Registry.Registry(hive).open(m + "\\%s" % (keys))
+                    for activesets in k.values():
+                        if activesets.name() == "StubPath":
+                            if activesets.value() is not '':
+                                last_write = k.timestamp()
+                                key_name = k.name().encode('ascii', 'ignore')
+                                stub_path = activesets.value().encode('ascii', 'ignore')
+                                
+                                active_setup_list_entries.append([last_write, key_name, stub_path])                         
+                
+                except Registry.RegistryKeyNotFoundException:
+                    continue
             
+    
         dict = {}
         for entry in active_setup_list_entries:
             dict[entry[1]] = entry[0], entry[2]
