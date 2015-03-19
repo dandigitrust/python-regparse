@@ -1,0 +1,10 @@
+[Core]
+Name = bhos
+Module = bhos
+
+[Documentation]
+Author = Patrick Olsen
+Version = 0.1
+Website = http://sysforensics.org
+Fields = "{{ clsids_lastwrite }}|{{ value }}|{{ inproc_lastwrite }}|{{ data }}"
+Description = Parses the NTUSER hive and returns Browser Helper Object entries.
