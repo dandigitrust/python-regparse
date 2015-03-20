@@ -1,0 +1,10 @@
+[Core]
+Name = recentdocs
+Module = recentdocs
+
+[Documentation]
+Author = Patrick Olsen
+Version = 0.1
+Website = http://sysforensics.org
+Fields = "{{last_write}}|{{key_name}}|{{key}}|{{value}}|{{data}}"
+Description = Parses the NTUSER hive and returns RecentDocs MRU entries.
