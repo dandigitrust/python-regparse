@@ -39,7 +39,6 @@ class RecentDocs(IPlugin):
                         
             for subkeys in Registry.Registry(hive).open("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs").subkeys():
                 mruorder = subkeys.value("MRUListEx").value()
-                
                 for values in subkeys.values():
                     for entry in  struct.unpack("%dI" % (len(mruorder)/4), mruorder):
                         if str(values.name()) == str(entry):
