@@ -39,22 +39,8 @@ class RecentDocs(IPlugin):
                         
             for subkeys in Registry.Registry(hive).open("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs").subkeys():
                 mruorder = subkeys.value("MRUListEx").value()
-                #struct.unpack("%dI" % (len(mruorder)/4), mruorder)
-                #(4, 2, 1, 3, 0, 4294967295)
-                #(0, 7, 4, 3, 6, 9, 8, 5, 2, 1, 4294967295)
-                #(4, 3, 2, 0, 4294967295)                
                 
-                #print subkeys.timestamp(), subkeys.name()
-                #2013-12-12 14:58:56.904373 .7z
-                #2014-03-13 20:28:56.859373 .doc                
                 for values in subkeys.values():
-                    #print subkeys.timestamp(), subkeys.name(), values.name()
-                    #2014-04-07 16:51:01.525450 .rtf MRUListEx
-                    #2014-04-07 16:51:01.525450 .rtf 0
-                    #2014-04-07 16:51:01.525450 .rtf 2
-                    #2014-04-07 16:51:01.525450 .rtf 3
-                    
-                
                     for entry in  struct.unpack("%dI" % (len(mruorder)/4), mruorder):
                         if str(values.name()) == str(entry):
                             recentdocs_root.append((subkeys.timestamp(), key, subkeys.name(), values.name(), values.value().split('\x00\x00')[0]))
