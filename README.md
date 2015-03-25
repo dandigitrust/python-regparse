@@ -21,16 +21,9 @@ How to Install
 - Install https://pypi.python.org/pypi/setuptools
 - sudo pip install python-registry
 - sudo pip install jinja2
-- wget https://github.com/sysforensics/python-regparse/blob/master/yapsy_mods/yapsy-master.zip
-- Unzip it
-- cd yapsy-master/package/
-- sudo python setup.py build
-- sudo python setup.py install
 - wget https://github.com/sysforensics/python-regparse/archive/master.zip
 - Unzip
 - Put it where you want, and then enjoy!
-
-
 
 I've tested/used on OSX, Windows and SIFT 3.0. If pip doesn't work for you try easy_install.
 
