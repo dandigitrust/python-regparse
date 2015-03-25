@@ -1,31 +1,27 @@
 import sys
-from modules.HelperFunctions import HelperFunction
-from Registry import Registry
-from yapsy.IPlugin import IPlugin
-from jinja2 import Template, Environment, PackageLoader
 import time
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
+from Registry import Registry
+from PluginManager import HelperFunctions
+from jinja2 import Template, Environment, PackageLoader
 
-class SystemInformation(IPlugin):
+class PluginClass(object):
 
-    def __init__(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
+    def __init__(self, hives=None, search=None, format=None, format_file=None):
+        self.hives = hives
+        self.search = search
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
-        self.format = format
-        self.format_file = format_file
+    def ProcessPlugin(self):
+
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
         
         dict = {}
         
-        for hive in self.hive:
+        for hive in self.hives:
             
             try:
-                control = HelperFunction(hive).CurrentControlSet()
+                control = HelperFunctions(hive).CurrentControlSet()
                 dict.update(self.getSystemInfo(Registry.Registry(hive).open('%s\\Control' % (control))))
             except Registry.RegistryKeyNotFoundException:
                 pass
@@ -51,14 +47,14 @@ class SystemInformation(IPlugin):
                                                  time_zone=time_zone) + "\n")
     
         elif self.format is not None:              
-            template = Environment().from_string(format[0])
+            template = Environment().from_string(self.format[0])
             sys.stdout.write(template.render(os_info=os_info, \
                                                  installed_date=installed_date, \
                                                  registered_owner=registered_owner, \
                                                  computer_name=computer_name, \
                                                  time_zone=time_zone) + "\n")        
       
-    def getSystemInfo(self, hive=None):       
+    def getSystemInfo(self, hive):       
         if "@tzres.dll" in hive.subkey("TimeZoneInformation").value("StandardName").value():
             time_zone = hive.subkey("TimeZoneInformation").value("TimeZoneKeyname").value()
         else:
@@ -68,7 +64,7 @@ class SystemInformation(IPlugin):
         dict = {'ComputerName': computer_name, 'TimeZone': time_zone}
         return(dict)
         
-    def getSoftwareInfo(self, hive=None):
+    def getSoftwareInfo(self, hive):
         master = hive
         try:
             product_name = master.value("ProductName").value()

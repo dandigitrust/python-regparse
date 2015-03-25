@@ -1,52 +1,46 @@
 import sys
-from modules.HelperFunctions import HelperFunction
 from Registry import Registry
-from yapsy.IPlugin import IPlugin
 from jinja2 import Template, Environment, PackageLoader
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
 
-class RunKeys(IPlugin):
+class PluginClass(object):
 
-    def __init__(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
+    def __init__(self, hives=None, search=None, format=None, format_file=None):
+        self.hives = hives
+        self.search = search
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
-        self.format = format
-        self.format_file = format_file
+    def ProcessPlugin(self):
+
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
         
         dict = {}
         
-        for hive in self.hive:
+        for hive in self.hives:
             dict.update(self.processKeys(hive))
             
         for key, val in dict.iteritems():
             last_write = val[0]
-            sub_key = key
+            value = key
             key_name = val[1]
-            value = val[2]
+            data = val[2]
             
             
             if self.format is not None:              
-                template = Environment().from_string(format[0])
+                template = Environment().from_string(self.format[0])
                 sys.stdout.write(template.render(last_write=last_write, \
                                                      key_name=key_name, \
-                                                     sub_key=sub_key, \
-                                                     value=value) + "\n")
+                                                     value=value, \
+                                                     data=data) + "\n")
             elif self.format_file is not None:
                 with open(self.format_file[0], "rb") as f:
                     template = env.from_string(f.read())
                     sys.stdout.write(template.render(last_write=last_write, \
                                                      key_name=key_name, \
-                                                     sub_key=sub_key, \
-                                                     value=value) + "\n")        
+                                                     value=value, \
+                                                     data=data) + "\n")        
     
-    def processKeys(self, hive=None):
-        self.hive = hive
+    def processKeys(self, hive):
         run_key_list = []
         run_entries =   ["Microsoft\\Windows\\CurrentVersion\\Run",
                          "Microsoft\\Windows\\CurrentVersion\\RunOnce",
@@ -62,8 +56,8 @@ class RunKeys(IPlugin):
         
         for k in run_entries:
             try:
-                for v in  Registry.Registry(self.hive).open(k).values():
-                    last_write = Registry.Registry(self.hive).open(k).timestamp()
+                for v in  Registry.Registry(hive).open(k).values():
+                    last_write = Registry.Registry(hive).open(k).timestamp()
                     if k:
                         key_name = k
                     else:

@@ -1,37 +1,26 @@
 import sys
-from modules.HelperFunctions import HelperFunction
 from Registry import Registry
-from yapsy.IPlugin import IPlugin
 from jinja2 import Template, Environment, PackageLoader
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
 
-class AppInit_DLLs(IPlugin):
+class PluginClass(object):
 
-    def __init__(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
+    def __init__(self, hives=None, search=None, format=None, format_file=None):
+        self.hives = hives
+        self.search = search
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
-        self.format = format
-        self.format_file = format_file
-
+    def ProcessPlugin(self):
+        
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
         
         appinit_dlls = ["Microsoft\\Windows NT\\CurrentVersion\\Windows",
                         "Wow6432Node\\Microsoft\\Windows NT\\CurrentVersion\\Windows"]
         
         appinit_dll_list = []
-
-        for hive in self.hive:
+        
+        for hive in self.hives:
             try:
-                #####################################################
-                ## I need some hives with more DLLs for more testing#
-                ## Hive(s) I have only has one entry.               #
-                ## Also need ones with RequireSignedAppInit_DLLs    #
-                #####################################################
                 for k in appinit_dlls:
                     last_write = Registry.Registry(hive).open(k).timestamp()
                     on_or_off = Registry.Registry(hive).open(k).value("AppInit_DLLs").value()
@@ -51,7 +40,7 @@ class AppInit_DLLs(IPlugin):
             key = entry[1]
             loadapp_data = entry[2]
             appinit_data = entry[3].lstrip()
-            
+
             if self.format_file is not None:                
                 with open(self.format_file[0], "rb") as f:
                     template = env.from_string(f.read())
@@ -60,8 +49,8 @@ class AppInit_DLLs(IPlugin):
                                                      loadapp_data=loadapp_data, \
                                                      appinit_data=appinit_data) + "\n")
             elif self.format is not None:           
-                template = Environment().from_string(format[0])
+                template = Environment().from_string(self.format[0])
                 sys.stdout.write(template.render(last_write=last_write, \
                                                  key=key, \
                                                  loadapp_data=loadapp_data, \
-                                                 appinit_data=appinit_data) + "\n")            
+                                                 appinit_data=appinit_data) + "\n")

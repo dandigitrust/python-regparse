@@ -1,32 +1,27 @@
 import sys
-from modules.HelperFunctions import HelperFunction
 from Registry import Registry
-from yapsy.IPlugin import IPlugin
 from jinja2 import Template, Environment, PackageLoader
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
 
-class TypedURLs(IPlugin):
+class PluginClass(object):
 
-    def __init__(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
+    def __init__(self, hives=None, search=None, format=None, format_file=None):
+        self.hives = hives
+        self.search = search
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
-        self.format = format
-        self.format_file = format_file
+    def ProcessPlugin(self):
+
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
         
-        for hive in self.hive:
+        for hive in self.hives:
             for entry in self.processURLs(hive):
                 last_write = entry[0]
                 url_name = entry[1]
                 url = entry[2]
             
                 if self.format is not None:
-                    template = Environment().from_string(format[0])
+                    template = Environment().from_string(self.format[0])
                     sys.stdout.write(template.render(last_write=last_write, \
                                                      url_name=url_name, \
                                                      url=url) + "\n")
@@ -38,7 +33,7 @@ class TypedURLs(IPlugin):
                                                          url_name=url_name, \
                                                          url=url) + "\n")            
             
-    def processURLs(self, hive=None):
+    def processURLs(self, hive):
         list_of_urls = []
         
         try:

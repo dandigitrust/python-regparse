@@ -1,10 +1,7 @@
-[Core]
-Name = mounts
-Module = mounts
-
 [Documentation]
+Plugin = mounts
 Author = Patrick Olsen
-Version = 0.3
-Website = http://sysforensics.org
-Fields = "{{ last_write }}|{{ name }}|{{ value }}"
-Description = Parses the SYSTEM and NTUSER hives and returns mount points.
+Version = 0.4
+Reference = http://sysforensics.org
+PrintFields = "{{ last_write }}|{{ name }}|{{ value }}"
+Description = Parses the NTUSER and SYSTEM hives and returns mount points (MountPoints2, Map Network Drive MRU, & MountedDevices).

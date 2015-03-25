@@ -1,10 +1,7 @@
-[Core]
-Name = terminalserver
-Module = terminalserver
-
 [Documentation]
+Plugin = terminalserver
 Author = Patrick Olsen
-Version = 0.1
-Website = http://sysforensics.org
-Fields = "{{last_write}}|{{ key_name }}|{{ value }}|{{ data }}"
+Version = 0.2
+Reference = http://sysforensics.org
+PrintFields = "{{last_write}}|{{ key_name }}|{{ value }}|{{ data }}"
 Description = Parses the SYSTEM hive and returns a Terminal Server entries.

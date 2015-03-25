@@ -1,28 +1,23 @@
 import sys
-from modules.HelperFunctions import HelperFunction
 from Registry import Registry
-from yapsy.IPlugin import IPlugin
+from PluginManager import HelperFunctions
 from jinja2 import Template, Environment, PackageLoader
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
 
-class Services(IPlugin):
-    
-    def __init__(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
+class PluginClass(object):
+
+    def __init__(self, hives=None, search=None, format=None, format_file=None):
+        self.hives = hives
+        self.search = search
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
-        self.format = format
-        self.format_file = format_file
-        
+    def ProcessPlugin(self):
+
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
         
         dict = {}
         
-        for hive in self.hive:
+        for hive in self.hives:
             dict.update(self.processServices(hive))
          
         for key, val in dict.iteritems():
@@ -44,7 +39,7 @@ class Services(IPlugin):
                                                      service_dll=service_dll) + "\n")
                     
             elif self.format is not None:
-                template = Environment().from_string(format[0])
+                template = Environment().from_string(self.format[0])
                 sys.stdout.write(template.render(last_write=last_write, key_name=key_name, \
                                                  image_path=image_path, type_name=type_name, \
                                                  display_name=display_name, start_type=start_type, \
@@ -52,7 +47,7 @@ class Services(IPlugin):
     
     def processServices(self, hive):
         
-            current = HelperFunction(hive).CurrentControlSet()
+            current = HelperFunctions(hive).CurrentControlSet()
             services = Registry.Registry(hive).open('%s\\Services' % (current))
             
             service_list = []

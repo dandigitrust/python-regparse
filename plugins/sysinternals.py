@@ -1,31 +1,26 @@
 import sys
-from modules.HelperFunctions import HelperFunction
 from Registry import Registry
-from yapsy.IPlugin import IPlugin
 from jinja2 import Template, Environment, PackageLoader
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
 
-class Sysinternals(IPlugin):
+class PluginClass(object):
 
-    def __init__(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
+    def __init__(self, hives=None, search=None, format=None, format_file=None):
+        self.hives = hives
+        self.search = search
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
-        self.format = format
-        self.format_file = format_file
+    def ProcessPlugin(self):
+
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
         
-        for hive in self.hive:
+        for hive in self.hives:
             for entry in self.processSysinternals(hive):
                 last_write = entry[0]
                 key_name = entry[1]
                 
                 if self.format is not None:
-                    template = Environment().from_string(format[0])
+                    template = Environment().from_string(self.format[0])
                     sys.stdout.write(template.render(last_write=last_write, \
                                                      key_name=key_name) + "\n")
                 elif self.format_file is not None:
@@ -34,7 +29,7 @@ class Sysinternals(IPlugin):
                         sys.stdout.write(template.render(last_write=last_write, \
                                                          key_name=key_name) + "\n")
                 
-    def processSysinternals(self, hive=None):
+    def processSysinternals(self, hive):
         
         sysinternals_list = []
         

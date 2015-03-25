@@ -27,20 +27,21 @@ Twitter: @patrickrolsen
 
 Thanks to Willi Ballenthin for https://github.com/williballenthin/python-registry
 '''
+import sys, imp
 import argparse
 from Registry import Registry
-from modules.PluginManager import ListPlugins
-from modules.ProcessingHives import ProcessHive
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
+from PluginManager import RegparsePluginManager
 
-def main():
+def main():    
     parser = argparse.ArgumentParser(description='Parse Windows Registry hives.')
-    parser.add_argument('--plugin', required=False, 
+    parser.add_argument('--plugin', required=False,
                         help='Specify plugin to run.')
     parser.add_argument('--listplugins', required=False, 
                         action='store_true', 
                         help='Lists all of the available plugins.')
+    parser.add_argument('--plugindetails', required=False, 
+                        action='store_true', 
+                        help='Lists details available plugins.')
     parser.add_argument('--hives', required=False, 
                         nargs='*', 
                         help='Registry Hives.')
@@ -54,12 +55,23 @@ def main():
                         nargs=1, dest="format_file",
                         help="Custom output template.")
     args = parser.parse_args()
+    
+    plugin_directory = "plugins/"
 
     if args.listplugins:
-        ListPlugins().AllPlugins()
+        RegparsePluginManager().listPlugin(plugin_directory)
+    
+    elif args.plugindetails:
+        RegparsePluginManager().detailedPlugin(plugin_directory)
+    
+    elif args.plugin is not None:
+        found_plugin = RegparsePluginManager().findPlugin(args.plugin, plugin_directory)
+        activated_plugin = RegparsePluginManager().loadPlugin(args.plugin, found_plugin)
+        
+        activated_plugin.PluginClass(args.hives, args.search, args.format, args.format_file).ProcessPlugin()
 
     else:
-        ProcessHive(args.plugin).getHive(args.hives, args.format, args.format_file, args.search)
+        exit(0)
 
 if __name__ == "__main__":
     main()

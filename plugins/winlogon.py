@@ -1,27 +1,22 @@
 import sys
-from modules.HelperFunctions import HelperFunction
 from Registry import Registry
-from yapsy.IPlugin import IPlugin
 from jinja2 import Template, Environment, PackageLoader
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
 
-class TypedURLs(IPlugin):
+class PluginClass(object):
 
-    def __init__(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
+    def __init__(self, hives=None, search=None, format=None, format_file=None):
+        self.hives = hives
+        self.search = search
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
-        self.format = format
-        self.format_file = format_file
+    def ProcessPlugin(self):
+
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
 
         winlogon_list = []
         
-        for hive in self.hive:
+        for hive in self.hives:
             key = Registry.Registry(hive).open("Microsoft\\Windows NT\\CurrentVersion\\Winlogon")
             last_write = key.timestamp()
             
@@ -40,7 +35,7 @@ class TypedURLs(IPlugin):
             data = entry[1]
             
             if self.format is not None:
-                template = Environment().from_string(format[0])
+                template = Environment().from_string(self.format[0])
                 sys.stdout.write(template.render(last_write=last_write, \
                                                  key_name=key_name, \
                                                  value=value, \

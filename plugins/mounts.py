@@ -1,26 +1,26 @@
 import sys
+#import struct
 from Registry import Registry
-from yapsy.IPlugin import IPlugin
+from PluginManager import HelperFunctions
 from jinja2 import Template, Environment, PackageLoader
 
-class Mounts(IPlugin):
+class PluginClass(object):
 
-    def __init__(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
+    def __init__(self, hives=None, search=None, format=None, format_file=None):
+        self.hives = hives
+        self.search = search
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self, hive=None, format=None, format_file=None, search=None):
-        self.hive = hive
-        self.format = format
-        self.format_file = format_file
-        dict = {}
-        env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
+    def ProcessPlugin(self):
         
-        for hive in self.hive:
+        env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
+
+        dict = {}
+        
+        for hive in self.hives:
             dict.update(self.processKeys(hive))
-            
-            
+         
         for key, val in dict.iteritems():
             last_write = val[0]
             name = key
@@ -33,7 +33,7 @@ class Mounts(IPlugin):
                                                      name=name, \
                                                      value=value) + "\n")
             elif self.format is not None:           
-                template = Environment().from_string(format[0])
+                template = Environment().from_string(self.format[0])
                 sys.stdout.write(template.render(last_write=last_write, \
                                                  name=name, \
                                                  value=value) + "\n")
@@ -60,8 +60,10 @@ class Mounts(IPlugin):
                 last_write = networkmru.timestamp()
                 name = mrus.name()
                 value = mrus.value()
-        
-                mounteddevices_list.append([last_write, name, value])            
+                #Need hives with multiple entries for MRUList for proper testing.
+                #mruorder = networkmru.value("MRUList").value()
+                mounteddevices_list.append([last_write, name, value])
+                
         except Registry.RegistryKeyNotFoundException as e:
             pass
         
