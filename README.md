@@ -15,6 +15,78 @@ This was a sticky point I had with alternative tools, and realizing this I thoug
 
 I suggest taking a look here for some output examples: https://sysforensics.org/2015/03/python-registry-parser.html as it's not as complex as it may sound. Even for non-coders it's easy.
 
+The template file are prebuilt output templates. More of people that aren't going to be sed/awk/greping output (like me) or maybe you just wanted a standard HTML output that you can use for reporting purposes.
+
+        regparse.py --plugin typedurls --hives hives/ntuser.dat --format_file templates/typedurls.html
+        
+        2014-06-04 13:09:14.749073|url1|http://google.com/
+        2014-06-04 13:09:14.749073|url3|chrome
+        2014-06-04 13:09:14.749073|url4|http://go.microsoft.com/fwlink/?LinkId=69157
+
+        python regparse.py --plugindetails
+        
+        <snip>
+        TYPEDPATHS
+        	Plugin: 	TYPEDPATHS
+        	Author: 	Patrick Olsen
+        	Version: 	0.2
+        	Reference: 	http://sysforensics.org
+        	Print Fields: 	"{{ last_write }}|{{ key }}|{{ value }}|{{ data }}"
+        	Description: 	Parses the NTUSER hive and returns Typed Paths entries.
+        TYPEDURLS
+        	Plugin: 	TYPEDURLS
+        	Author: 	Patrick Olsen
+        	Version: 	0.4
+        	Reference: 	http://sysforensics.org
+        	Print Fields: 	"{{ last_write }}|{{ url_name }}|{{ url }}"
+        	Description: 	Parses the NTUSER hives and returns Typed URL entries.
+        <snip>
+
+So you want to look at the typed urls. You will see from the plugindeails that you have a few printable fields to choose from (last_write, url_name, and url).
+
+For demonstation purposes to show the flexability of the output let's say you just want the url.
+
+        python regparse.py --plugin typedurls --hives hives/ntuser.dat --format '{{url}}'
+        
+        http://google.com/
+        chrome
+        http://go.microsoft.com/fwlink/?LinkId=69157
+
+Let's say you have multiple NTUSER hives that you want to process. You can do that like this:
+
+        python regparse.py --plugin typedurls --hives hives/ntuser.dat hives/xphive/NTUSER.DAT --format '{{url}}'
+        
+        http://google.com/
+        chrome
+        http://go.microsoft.com/fwlink/?LinkId=69157
+        http://google.com/
+        \\vmware-host\Shared Folders\MalwareLabTools
+        http://www.microsoft.com/isapi/redir.dll?prd=ie&pver=6&ar=msnhome
+
+Or let's say you wanted to put the word "hello_world:" in front of each url (for whatever reason).
+
+        python regparse.py --plugin typedurls --hives hives/ntuser.dat hives/xphive/NTUSER.DAT --format 'hello_world:{{url}}'
+        
+        hello_world:http://google.com/
+        hello_world:chrome
+        hello_world:http://go.microsoft.com/fwlink/?LinkId=69157
+        hello_world:http://google.com/
+        hello_world:\\vmware-host\Shared Folders\MalwareLabTools
+        hello_world:http://www.microsoft.com/isapi/redir.dll?prd=ie&pver=6&ar=msnhome
+
+This allows you to tag the output, which you can then simply filter away at a later time.
+
+Now if you want all of it you just re-add those printable fields as such:
+
+        python regparse.py --plugin typedurls --hives hives/ntuser.dat hives/xphive/NTUSER.DAT --format "{{last_write}}|{{url_name}}|{{url}}"
+        
+        2014-06-04 13:09:14.749073|url1|http://google.com/
+        2014-06-04 13:09:14.749073|url3|chrome
+        2014-06-04 13:09:14.749073|url4|http://go.microsoft.com/fwlink/?LinkId=69157
+        2014-09-05 05:21:12.234362|url1|http://google.com/
+        2014-09-05 05:21:12.234362|url2|\\vmware-host\Shared Folders\MalwareLabTools
+        2014-09-05 05:21:12.234362|url3|http://www.microsoft.com/isapi/redir.dll?prd=ie&pver=6&ar=msnhome
+
 How to Install
 ===============
 - Install Python 2.79
