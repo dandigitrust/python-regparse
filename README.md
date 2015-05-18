@@ -13,7 +13,7 @@ Output
 =======
 This was a sticky point I had with alternative tools, and realizing this I thought hard and came to the conclusion if I want a tool that doesn't have messy output i'm going to have to make it custom user defined output, and then provide a fallback template file if a custom output isn't defined via the command line. This will likely turn some people off from using this tool, but I think it's the best way forward.
 
-I suggest taking a look here for some output examples: https://sysforensics.org/2015/03/python-registry-parser.html as it's not as complex as it may sound. Even for non-coders it's easy.
+I suggest taking a look here for some output examples: http://sysforensics.org/2015/03/python-registry-parser.html as it's not as complex as it may sound. Even for non-coders it's easy.
 
 The template file are prebuilt output templates. More of people that aren't going to be sed/awk/greping output (like me) or maybe you just wanted a standard HTML output that you can use for reporting purposes.
 
