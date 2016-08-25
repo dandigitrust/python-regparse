@@ -1,4 +1,5 @@
 import sys
+import struct
 from Registry import Registry
 from jinja2 import Template, Environment, PackageLoader
 
@@ -20,33 +21,34 @@ class PluginClass(object):
                        ]
 
         for hive in self.hives:
-            try:
-                for k in lastvisited:
-                    last_write = Registry.Registry(hive).open(k).timestamp()
-                    key = Registry.Registry(hive).open(k).name()
-                    mruorder = Registry.Registry(hive).open(k).value("MRUList").value()
-                    for entry in list(mruorder):
-                        for vals in Registry.Registry(hive).open(k).values():
-                            if vals.name() == entry:
-                                value = vals.name()
-                                data = vals.value()
+            for k in lastvisited:
+                try:
+                    lvmru = Registry.Registry(hive).open(k)
+                    key = lvmru.name()
+                    last_write = lvmru.timestamp()
+                    mruorder = lvmru.value("MRUListEx").value()
+                    for entry in struct.unpack("%dI" % (len(mruorder)/4), mruorder):
+                        for values in lvmru.values():
+                            if str(values.name()) == str(entry):
+                                value = values.name()
+                                data = (values.value().split('\x00\x00')[0])
                                 if self.format_file is not None:                
                                     with open(self.format_file[0], "rb") as f:
                                         template = env.from_string(f.read())
                                         sys.stdout.write(template.render(last_write=last_write, \
-                                                                         key=key, \
-                                                                         mruorder=mruorder, \
-                                                                         value=value, \
-                                                                         data=data) + "\n")
+                                                                            key=key, \
+                                                                            mruorder=mruorder, \
+                                                                            value=value, \
+                                                                            data=data) + "\n")
                                 elif self.format is not None:           
                                     template = Environment().from_string(self.format[0])
                                     sys.stdout.write(template.render(last_write=last_write, \
-                                                                     key=key, \
-                                                                     mruorder=mruorder, \
-                                                                     value=value, \
-                                                                     data=data) + "\n")                                
-            except (Registry.RegistryKeyNotFoundException, Registry.RegistryValueNotFoundException):
-                continue
+                                                                        key=key, \
+                                                                        mruorder=mruorder, \
+                                                                        value=value, \
+                                                                        data=data) + "\n")                                
+                except (Registry.RegistryKeyNotFoundException, Registry.RegistryValueNotFoundException):
+                    continue
 
 
 
