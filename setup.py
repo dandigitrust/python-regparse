@@ -10,10 +10,12 @@ if sys.argv[-1] == 'tag':
     sys.exit()
 
 setup(
-    name='regparse',
+    name='python-regparse',
     version=version,
     packages=find_packages(),
     license='MIT',
+    author='Patrick Olsen',
+    author_email='patrick.olsen@sysforensics.org',
     package_data={'regparse': ['*.plugin']},
     install_requires=[
         'Jinja2',
@@ -21,5 +23,6 @@ setup(
     ],
     entry_points={
         'console_scripts': ['regparse=regparse.command_line:main']
-    }
+    },
+    include_package_data=True
 )
