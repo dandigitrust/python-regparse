@@ -50,7 +50,7 @@ def main():
         found_plugin = RegparsePluginManager().findPlugin(args.plugin, plugin_directory)
         activated_plugin = RegparsePluginManager().loadPlugin(args.plugin, found_plugin)
         
-        activated_plugin.PluginClass(args.hives, args.search, args.format, args.format_file).ProcessPlugin()
+        activated_plugin.PluginClass(args.hives, args.search, args.format, args.format_file).process_plugin()
 
     else:
         exit(0)

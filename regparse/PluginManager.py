@@ -1,6 +1,86 @@
 import os, io, sys, imp
 import ConfigParser
 from Registry import Registry
+from datetime import datetime, timedelta
+
+from regparse.jinja import JinjaEnv
+
+
+class PluginBase(object):
+    default_template = None
+
+    def __init__(self, hives=None, search=None, format=None, format_file=None):
+        self.hives = hives
+        self.search = search
+        self.format = format
+        self.format_file = format_file
+
+    def process_plugin(self):
+        for data in self.process_to_data():
+            self.output_data(data)
+
+    def get_template(self):
+        env = JinjaEnv.get_env()
+
+        if self.format:
+            return env.from_string(self.format[0])
+        elif self.format_file:
+            with open(self.format_file[0], "rb") as f:
+                return env.from_string(f.read())
+        elif self.default_template:
+            return env.get_template(self.default_template)
+        else:
+            return None
+
+    def process_keys(self, hive):
+        """
+        Override this to do all the heavy lifting here.
+
+        :return: a list of "results" of any type.. This will be in turn processed by "result to data"
+                 if you do not also override the method result_to_data, this must return a list of dictionaries,
+                 each of which can be consumed but output_data
+        """
+        raise NotImplemented
+
+    def results_to_data_list(self, results):
+        """
+        This must be overridden if process_keys returns anything other than a list
+        :param results: results that comes back from process_keys
+        :return: must return a list of result_data dicts
+        """
+        return [self.result_to_data(r) for r in results]
+
+    def result_to_data(self, result):
+        """
+        This needs to be overridden if process_keys returns anything other than a list of dictionaries
+        :param result: a single result from the list of results from the process_keys method
+        :return: a dictionary to be passed to the jinja template
+        """
+        return result
+
+    def output_data(self, data):
+        """
+        This is used by the commandline application to output the results to the specified template.
+        :param data:
+        :return:
+        """
+        template = self.get_template()
+        if template:
+            sys.stdout.write(template.render(**data) + '\n')
+
+    def process_to_data(self):
+        rv = []
+        for hive in self.hives:
+            results = self.process_keys(hive)
+            rv += self.results_to_data_list(results)
+        return rv
+
+    @classmethod
+    def convert_wintime(cls, windate):
+        # http://stackoverflow.com/questions/4869769/convert-64-bit-windows-date-time-in-python
+        us = int(windate) / 10
+        first_run = datetime(1601, 1, 1) + timedelta(microseconds=us)
+        return first_run
 
 
 class RegparsePluginManager(object):

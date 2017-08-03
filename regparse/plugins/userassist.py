@@ -1,56 +1,17 @@
 import sys
 import struct
 from Registry import Registry
-from jinja2 import Template, Environment, PackageLoader
+from jinja2 import Environment, PackageLoader
 import codecs
-import time
 from datetime import datetime, timedelta
 
-class PluginClass(object):
+from regparse.PluginManager import PluginBase
 
-    def __init__(self, hives=None, search=None, format=None, format_file=None):
-        self.hives = hives
-        self.search = search
-        self.format = format
-        self.format_file = format_file
 
-    def ProcessPlugin(self):
+class PluginClass(PluginBase):
+    default_template = 'userassist.html'
 
-        env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
-
-        for hive in self.hives:
-
-            for entry in self.getUserAssist(hive):
-                last_write = entry[0]
-                sub_key = entry[1]
-                runcount = entry[2]
-                windate = entry[3]
-                data = entry[4]            
-            
-                if self.format is not None:
-                    template = Environment().from_string(self.format[0])
-                    sys.stdout.write(template.render(last_write=last_write, \
-                                                     sub_key=sub_key, \
-                                                     runcount=runcount, \
-                                                     windate=windate, \
-                                                     data=data) + "\n")
-            
-                elif self.format_file is not None:
-                    with open(self.format_file[0], "rb") as f:
-                        template = env.from_string(f.read())            
-                        sys.stdout.write(template.render(last_write=last_write, \
-                                                         sub_key=sub_key, \
-                                                         runcount=runcount, \
-                                                         windate=windate, \
-                                                         data=data) + "\n")
-
-    def convert_wintime(self, windate):
-        # http://stackoverflow.com/questions/4869769/convert-64-bit-windows-date-time-in-python
-        us = int(windate) / 10
-        first_run = datetime(1601,1,1) + timedelta(microseconds=us)
-        return first_run    
-
-    def getUserAssist(self, hive):
+    def process_keys(self, hive):
         userassist = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\UserAssist"
 
         #Giuds for the various Operating Systems
@@ -95,4 +56,13 @@ class PluginClass(object):
             except Registry.RegistryKeyNotFoundException as e:
                 continue
             
-        return(userassist_entries)
+        return userassist_entries
+
+    def result_to_data(self, result):
+        return dict(
+            last_write=result[0],
+            sub_key=result[1],
+            runcount=result[2],
+            windate=result[3],
+            data=result[4]
+        )

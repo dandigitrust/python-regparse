@@ -10,7 +10,7 @@ class PluginClass(object):
         self.format = format
         self.format_file = format_file
 
-    def ProcessPlugin(self):
+    def process_plugin(self):
 
         env = Environment(keep_trailing_newline=True, loader=PackageLoader('regparse', 'templates'))
         
