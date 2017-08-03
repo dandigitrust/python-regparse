@@ -1,7 +1,10 @@
 import sys
+
 from Registry import Registry
-from PluginManager import HelperFunctions
-from jinja2 import Template, Environment, PackageLoader
+from jinja2 import Environment, PackageLoader
+
+from regparse.PluginManager import HelperFunctions
+
 
 class PluginClass(object):
 

@@ -1,8 +1,9 @@
 import sys
-#import struct
+
+# import struct
 from Registry import Registry
-from PluginManager import HelperFunctions
-from jinja2 import Template, Environment, PackageLoader
+from jinja2 import Environment, PackageLoader
+
 
 class PluginClass(object):
 

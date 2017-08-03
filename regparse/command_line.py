@@ -27,12 +27,14 @@ Twitter: @patrickrolsen
 
 Thanks to Willi Ballenthin for https://github.com/williballenthin/python-registry
 '''
-import sys, imp
 import argparse
-from Registry import Registry
-from PluginManager import RegparsePluginManager
+import os
 
-def main():    
+import regparse
+from regparse.PluginManager import RegparsePluginManager
+
+
+def main():
     parser = argparse.ArgumentParser(description='Parse Windows Registry hives.')
     parser.add_argument('--plugin', required=False,
                         help='Specify plugin to run.')
@@ -55,8 +57,9 @@ def main():
                         nargs=1, dest="format_file",
                         help="Custom output template.")
     args = parser.parse_args()
-    
-    plugin_directory = "plugins/"
+
+    regparse_package_dir = os.path.abspath(regparse.__file__)
+    plugin_directory = os.path.join(regparse_package_dir, "plugins/")
 
     if args.listplugins:
         RegparsePluginManager().listPlugin(plugin_directory)
