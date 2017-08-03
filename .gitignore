@@ -1,4 +1,4 @@
 .idea
 *.pyc
 **/__pycache__
-regparse.egg-info
+python_regparse.egg-info

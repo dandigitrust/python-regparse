@@ -37,7 +37,7 @@ def main():
                         help="Custom output template.")
     args = parser.parse_args()
 
-    regparse_package_dir = os.path.abspath(regparse.__file__)
+    regparse_package_dir = os.path.abspath(os.path.dirname(regparse.__file__))
     plugin_directory = os.path.join(regparse_package_dir, "plugins/")
 
     if args.listplugins:
