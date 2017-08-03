@@ -37,7 +37,7 @@ class PluginClass(PluginBase):
                         windate = self.convert_wintime(date)
                         data = codecs.decode(sks.name(), 'rot_13')
                         
-                        userassist_entries.append((last_write, sub_key, runcount, windate, data))
+                        userassist_entries.append((last_write, sub_key, runcount, windate, data, hive))
                     
                     #Windows XP
                     elif len(sks.value()) == 16:
@@ -51,7 +51,7 @@ class PluginClass(PluginBase):
                         data = codecs.decode(sks.name(), 'rot_13')
                         
                         #print last_write, sub_key, runcount, windate, data
-                        userassist_entries.append((last_write, sub_key, runcount, windate, data))
+                        userassist_entries.append((last_write, sub_key, runcount, windate, data, hive))
         
             except Registry.RegistryKeyNotFoundException as e:
                 continue
@@ -64,5 +64,6 @@ class PluginClass(PluginBase):
             sub_key=result[1],
             runcount=result[2],
             windate=result[3],
-            data=result[4]
+            data=result[4],
+            hive=result[5]
         )
