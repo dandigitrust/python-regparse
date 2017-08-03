@@ -1,0 +1,7 @@
+[Documentation]
+Plugin = shimcache
+Author = Dan DiPasquo
+Version = 0.1
+Reference = https://github.com/mandiant/ShimCacheParser/blob/master/ShimCacheParser.py
+PrintFields = "{{last_modified}}|{{last_update}}|{{path}}|{{file_size}}|{{exec_flag}}"
+Description = Parses the SYSTEM hive and returns ShimCache entries.

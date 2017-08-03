@@ -46,7 +46,7 @@ class PluginBase(object):
         """
         This must be overridden if process_keys returns anything other than a list
         :param results: results that comes back from process_keys
-        :return: must return a list of result_data dicts
+        :return: must return a ligitst of result_data dicts
         """
         return [self.result_to_data(r) for r in results]
 
