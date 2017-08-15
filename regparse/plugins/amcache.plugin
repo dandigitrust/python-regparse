@@ -1,0 +1,9 @@
+[Documentation]
+Plugin = amcache
+Author = Dan DiPasquo
+Version = 0.1
+Reference = https://github.com/williballenthin/python-registry/blob/master/samples/amcache.py
+PrintFields = "{{path}}|{{sha1}}|{{size}}|{{file_description}}|{{source_key_timestamp}}|{{created_timestamp}}|" +
+    "{{modified_timestamp}}|{{modified_timestamp2}}|{{linker_timestamp}}|{{product}}|{{company}}|{{pe_sizeofimage}}" +
+    "{{version_number}}|{{version}}|{{language}}|{{pe_checksum}}|{{amcache_id}}|{{switchbackcontext}}"
+Description = Parses the Amcache.hve hive and returns Amcache entries.

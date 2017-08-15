@@ -1,9 +1,16 @@
 import os, io, sys, imp
 import ConfigParser
+from collections import namedtuple
+
 from Registry import Registry
+from Registry.RegistryParse import parse_windows_timestamp as _parse_windows_timestamp
+
 from datetime import datetime, timedelta
 
 from regparse.jinja import JinjaEnv
+
+
+Field = namedtuple("Field", ["name", "getter"])
 
 
 class PluginBase(object):
@@ -81,6 +88,68 @@ class PluginBase(object):
         us = int(windate) / 10
         first_run = datetime(1601, 1, 1) + timedelta(microseconds=us)
         return first_run
+
+    @classmethod
+    def make_value_getter(cls, value_name):
+        """ return a function that fetches the value from the registry key """
+
+        def _value_getter(key):
+            try:
+                return key.value(value_name).value()
+            except Registry.RegistryValueNotFoundException:
+                return None
+
+        return _value_getter
+
+    @classmethod
+    def make_windows_timestamp_value_getter(cls, value_name):
+        """
+        return a function that fetches the value from the registry key
+          as a Windows timestamp.
+        """
+        f = cls.make_value_getter(value_name)
+
+        def _value_getter(key):
+            try:
+                ts = f(key)
+                if ts:
+                    return cls.parse_windows_timestamp(ts)
+            except ValueError:
+                pass
+
+            return None
+
+        return _value_getter
+
+    @classmethod
+    def parse_unix_timestamp(cls, qword):
+        return datetime.fromtimestamp(qword)
+
+    @classmethod
+    def parse_windows_timestamp(cls, qword):
+        try:
+            return _parse_windows_timestamp(qword)
+        except ValueError:
+            return None
+
+    @classmethod
+    def make_unix_timestamp_value_getter(cls, value_name):
+        """
+        return a function that fetches the value from the registry key
+          as a UNIX timestamp.
+        """
+        f = cls.make_value_getter(value_name)
+
+        def _value_getter(key):
+            try:
+                unix_timestamp = f(key)
+                if unix_timestamp:
+                    return cls.parse_unix_timestamp(f(key))
+            except ValueError:
+                pass
+            return None
+
+        return _value_getter
 
 
 class RegparsePluginManager(object):
